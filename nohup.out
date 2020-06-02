@@ -1,0 +1,17 @@
+models/swingnet_1000.pth.tar
+models/swingnet_1100.pth.tar
+models/swingnet_1200.pth.tar
+models/swingnet_1300.pth.tar
+models/swingnet_1400.pth.tar
+models/swingnet_1500.pth.tar
+models/swingnet_1600.pth.tar
+models/swingnet_1700.pth.tar
+models/swingnet_1800.pth.tar
+models/swingnet_1900.pth.tar
+models/swingnet_2000.pth.tar
+models/swingnet_2100.pth.tar
+models/swingnet_2200.pth.tar
+models/swingnet_2300.pth.tar
+models/swingnet_2400.pth.tar
+models/swingnet_2500.pth.tar
+split:1  Average PCE: {1000: 0.8366666666666667, 1100: 0.8955952380952381, 1200: 0.9126190476190477, 1300: 0.9023809523809524, 1400: 0.925, 1500: 0.9367857142857143, 1600: 0.9427380952380953, 1700: 0.949047619047619, 1800: 0.9486904761904762, 1900: 0.9605952380952381, 2000: 0.9628571428571429, 2100: 0.9653571428571428, 2200: 0.9654761904761905, 2300: 0.9651190476190477, 2400: 0.949047619047619, 2500: 0.9622619047619048}
