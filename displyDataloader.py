@@ -6,7 +6,9 @@ import numpy as np
 import torch
 from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms
+import sys 
 
+#data_info 文件格式为 文件所在位置的绝对路径
 #非光流部分
 def ToTensor(sample):
     """Convert ndarrays in sample to Tensors."""
@@ -33,14 +35,12 @@ def Normalize(sample,mean,std):
 
 
 class GolfDB(Dataset):
-    def __init__(self, data_file, vid_dir, seq_length, train=True,transform=None, myMean=[], myStd=[]):
+    def __init__(self, data_file, transform=None, myMean=[], myStd=[]):
         self.dataInfo = open(data_file)
-        self.vid_dir = vid_dir
-        self.seq_length = seq_length
         self.transform = transform
         self.myMean=myMean
         self.myStd=myStd
-        self.videosPath=[]
+        self.videosPath=[]#用来存储video对应的图片帧所在位置
         for line in self.dataInfo:
             line = line.rstrip()
             info = line.split()
@@ -65,16 +65,11 @@ class GolfDB(Dataset):
             if self.transform:
                 transImg=self.transform(transImg)
             images.append(transImg)
-            # cv2.imwrite(osp.join("/home/zqr/codes/data/transImg","transImage.jpg"), transImg)
             labels.append(8)
         cap.release()
         
         sample = {'images':images, 'labels':np.asarray(labels)}
-        # sample = {'images':np.asarray(images), 'labels':np.asarray(labels)}
-        # if self.transform:
-        #     sample['images'] = self.transform(sample['images'])
         sample=ToTensor(sample)
-        # sample=Normalize(sample)
         return sample
 
 
@@ -94,70 +89,46 @@ def Normalize_T(sample):
 
 
 class GolfDB_T(Dataset):
-    def __init__(self, data_file, vid_dir, seq_length, transform=None, train=True):
-        self.df = pd.read_pickle(data_file)
+    def __init__(self, data_file, transform=None):
+        # self.df = pd.read_pickle(data_file)
+        self.data_info = open(data_file)
         self.vid_dir = vid_dir
-        self.seq_length = seq_length
         self.transform = transform
         self.train = train
+        self.videosPath=[]#用来存储video对应的光流文件所在位置
+        for line in self.dataInfo:
+            line = line.rstrip()
+            info = line.split()
+            self.videosPath.append(info[0])
 
     def __len__(self):
         return len(self.df)
 
     def __getitem__(self, idx):
-        a = self.df.loc[idx, :]  # annotation info
-        events = a['events']
-        events -= events[0]  # now frame #s correspond to frames in preprocessed video clips
-
+        
         images, labels = [], []
-        opticalFileFolder = osp.join(self.vid_dir, '{}'.format(a['id']))
-        # print(opticalFileFolder)
-        if self.train: 
-            start_frame = np.random.randint(events[-1] + 1)
-            pos = start_frame
-            #光流文件是从第一帧开始的
-            if pos == 0:
-                pos = 1
-            while len(images) < self.seq_length:
-                opticalFileName = osp.join(opticalFileFolder, '{:0>4d}.flo'.format(pos))
-                if os.path.exists(opticalFileName):
-                    opticalOri = np.fromfile(opticalFileName, np.float32, offset=12).reshape(160, 160, 2)
-                    opticalArray = np.empty([160, 160, 3], np.float32)
-                    opticalArray[..., 0] = 255
-                    opticalArray[..., 1] = opticalOri[:,:,0]
-                    opticalArray[..., 2] = opticalOri[:,:,1]
-                    if self.transform:
-                        opticalArray=self.transform(opticalArray)
-                    images.append(opticalArray)
-                    if pos in events[1:-1]:
-                        labels.append(np.where(events[1:-1] == pos)[0][0])
-                    else:
-                        labels.append(8)
-                    pos += 1
-                else:
-                    pos = 1
-        else:
-            # full clip
-            #get files num
-            filesNum = -1
-            for ger in os.walk(opticalFileFolder):
-                filesNum = len(ger[2])
-            for pos in range(1,filesNum + 1):
-                opticalFileName = osp.join(opticalFileFolder,'{:0>4d}.flo'.format(pos))
-                # print(opticalFileName)
-                opticalOri = np.fromfile(opticalFileName, np.float32, offset=12).reshape(160, 160, 2)
-                opticalArray = np.empty([160, 160, 3], np.float32)
-                opticalArray[..., 0] = 255
-                opticalArray[..., 1] = opticalOri[:,:,0]
-                opticalArray[..., 2] = opticalOri[:,:,1]
-                # print(opticalFileName + "is ok")
-                if self.transform:
-                    opticalArray=self.transform(opticalArray)
-                images.append(opticalArray)
-                if pos in events[1:-1]:
-                    labels.append(np.where(events[1:-1] == pos)[0][0])
-                else:
-                    labels.append(8)
+        opticalFileFolder = self.dataInfo[idx]
+        # full clip
+        #get files num
+        filesNum = -1
+        for ger in os.walk(opticalFileFolder):
+            filesNum = len(ger[2])
+        for pos in range(1,filesNum + 1):
+            opticalFileName = osp.join(opticalFileFolder,'{:0>4d}.flo'.format(pos))
+            # print(opticalFileName)
+            opticalOri = np.fromfile(opticalFileName, np.float32, offset=12).reshape(160, 160, 2)
+            opticalArray = np.empty([160, 160, 3], np.float32)
+            opticalArray[..., 0] = 255
+            opticalArray[..., 1] = opticalOri[:,:,0]
+            opticalArray[..., 2] = opticalOri[:,:,1]
+            # print(opticalFileName + "is ok")
+            if self.transform:
+                opticalArray=self.transform(opticalArray)
+            images.append(opticalArray)
+            if pos in events[1:-1]:
+                labels.append(np.where(events[1:-1] == pos)[0][0])
+            else:
+                labels.append(8)
         sample = {'images': images, 'labels': np.asarray(labels)}
         sample = Normalize_T(sample)
         
@@ -166,20 +137,28 @@ class GolfDB_T(Dataset):
 
 
 if __name__ == '__main__':
-
-    myMean=[0.485, 0.456, 0.406]
-    myStd=[0.229, 0.224, 0.225]  # ImageNet mean and std (RGB)
+    if len(sys.argv != 2):
+        print("you should give the data_info path")
+        sys.exit(1)
     
-    dataset = GolfDB(data_file='/home/zqr/codes/GolfDB/data/videos_processed_160/datafile.txt',
-                     vid_dir='/home/zqr/codes/GolfDB/data/videos_processed_160',
-                     seq_length=64,
-                     transform=transforms.Compose([transforms.ToPILImage(),
-                        transforms.RandomHorizontalFlip(0.5),
-                        transforms.RandomAffine(5,shear=5),
-                        transforms.ToTensor()]),
-                     train=False,
-                     myMean=myMean,
-                     myStd=myStd)
+    data_file = sys.argv[1]
+
+    # 非光流部分
+    # myMean=[0.485, 0.456, 0.406]
+    # myStd=[0.229, 0.224, 0.225]  # ImageNet mean and std (RGB)
+    
+    # dataset = GolfDB(data_file,
+    #                  transform=transforms.Compose([transforms.ToPILImage(),
+    #                     transforms.RandomHorizontalFlip(0.5),
+    #                     transforms.RandomAffine(5,shear=5),
+    #                     transforms.ToTensor()]),
+    #                  myMean=myMean,
+    #                  myStd=myStd)
+    
+    # 光流部分
+    dataset = GolfDB_T(data_file,
+                     transform=None)
+
 
     data_loader = DataLoader(dataset, batch_size=1, shuffle=False, num_workers=6, drop_last=False)
 
