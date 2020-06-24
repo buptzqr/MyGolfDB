@@ -78,7 +78,9 @@ def preprocess_optFiles(optFilesFolder_160, dim=160):
             objOutput = open(opt_160_file_path, 'wb')
 
             numpy.array([80, 73, 69, 72], numpy.uint8).tofile(objOutput)
-            opticalArray = np.empty([160, 160, 3], np.float32)
+            opticalArray = np.empty([160, 160, 2], np.float32)
+            opticalArray[..., 0] = b_img[..., 0]
+            opticalArray[..., 1] = b_img[..., 1]
 
             numpy.array([opticalArray.shape[2], opticalArray.shape[1]],
                         numpy.int32).tofile(objOutput)
