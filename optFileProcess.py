@@ -38,20 +38,22 @@ def preprocess_optFiles(optFilesFolder_160, dim=160):
         if not os.path.exists(path):
             os.mkdir(path)
 
-        print('Processing annotation id {}'.format(optFolder))
+        print('Processing folder id {}'.format(optFolder))
 
-        imagesFoler = os.path.join(path, optFolder)
-        if not os.path.exists(imagesFoler):
-            os.mkdir(imagesFoler)
+        optFilesResizeFoler = os.path.join(path, optFolder)
+        if not os.path.exists(optFilesResizeFoler):
+            os.mkdir(optFilesResizeFoler)
         x = int(bbox[0])
         y = int(bbox[1])
         w = int(bbox[2])
         h = int(bbox[3])
         folderPath = os.path.join(optFilesFolder, optFolder)
+        fileNum = 0  # 记录resize了多少文件
         for optFile in os.listdir(folderPath):
             # 这个图片尺寸需要根据需要更改
+            filePath = os.path.join(folderPath, optFile)
             opticalOri = np.fromfile(
-                os.path(folderPath, optFile), np.float32, offset=12).reshape(960, 544, 2)
+                filePath, np.float32, offset=12).reshape(960, 544, 2)
             opticalArray = np.empty([960, 544, 3], np.float32)
             opticalArray[..., 0] = 255
             opticalArray[..., 1] = opticalOri[:, :, 0]
@@ -72,7 +74,7 @@ def preprocess_optFiles(optFilesFolder_160, dim=160):
             b_img = cv2.copyMakeBorder(
                 resized, top, bottom, left, right, cv2.BORDER_REPLICATE)
 
-            opt_160_file_path = os.path.join(optFilesFolder_160, optFile)
+            opt_160_file_path = os.path.join(optFilesResizeFoler, optFile)
             objOutput = open(opt_160_file_path, 'wb')
 
             numpy.array([80, 73, 69, 72], numpy.uint8).tofile(objOutput)
@@ -83,8 +85,9 @@ def preprocess_optFiles(optFilesFolder_160, dim=160):
             numpy.array(opticalArray, numpy.float32).tofile(objOutput)
 
             objOutput.close()
+            fileNum += 1
         count += 1
-        print("resize {} files".format(count))
+        print("resize {} files".format(fileNum))
 
 
 if __name__ == '__main__':
