@@ -55,9 +55,7 @@ class GolfDB(Dataset):
         labels = []
         videoPath = self.videosPath[idx]
         cap = cv2.VideoCapture(videoPath)
-
-        
-            # full clip
+        # full clip
         for pos in range(int(cap.get(cv2.CAP_PROP_FRAME_COUNT))):
             _, img = cap.read()
             img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
@@ -91,23 +89,21 @@ def Normalize_T(sample):
 class GolfDB_T(Dataset):
     def __init__(self, data_file, transform=None):
         # self.df = pd.read_pickle(data_file)
-        self.data_info = open(data_file)
-        self.vid_dir = vid_dir
+        self.dataInfo = open(data_file)
         self.transform = transform
-        self.train = train
-        self.videosPath=[]#用来存储video对应的光流文件所在位置
+        self.opticalFilessPath=[]#用来存储video对应的光流文件所在位置
         for line in self.dataInfo:
             line = line.rstrip()
             info = line.split()
-            self.videosPath.append(info[0])
+            self.opticalFilessPath.append(info[0])
 
     def __len__(self):
-        return len(self.df)
+        return len(self.opticalFilessPath)
 
     def __getitem__(self, idx):
         
         images, labels = [], []
-        opticalFileFolder = self.dataInfo[idx]
+        opticalFileFolder = self.opticalFilessPath[idx]
         # full clip
         #get files num
         filesNum = -1
@@ -125,10 +121,7 @@ class GolfDB_T(Dataset):
             if self.transform:
                 opticalArray=self.transform(opticalArray)
             images.append(opticalArray)
-            if pos in events[1:-1]:
-                labels.append(np.where(events[1:-1] == pos)[0][0])
-            else:
-                labels.append(8)
+            labels.append(8)
         sample = {'images': images, 'labels': np.asarray(labels)}
         sample = Normalize_T(sample)
         
@@ -137,12 +130,6 @@ class GolfDB_T(Dataset):
 
 
 if __name__ == '__main__':
-    if len(sys.argv != 2):
-        print("you should give the data_info path")
-        sys.exit(1)
-    
-    data_file = sys.argv[1]
-
     # 非光流部分
     # myMean=[0.485, 0.456, 0.406]
     # myStd=[0.229, 0.224, 0.225]  # ImageNet mean and std (RGB)
@@ -155,6 +142,7 @@ if __name__ == '__main__':
     #                  myMean=myMean,
     #                  myStd=myStd)
     
+    data_file = "/home/zqr/codes/data/data_info.txt"
     # 光流部分
     dataset = GolfDB_T(data_file,
                      transform=None)

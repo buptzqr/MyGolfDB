@@ -105,7 +105,6 @@ class GolfDB(Dataset):
 
 if __name__ == '__main__':
 
-    # norm = Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])  # ImageNet mean and std (RGB)
     myMean=[0.485, 0.456, 0.406]
     myStd=[0.229, 0.224, 0.225]  # ImageNet mean and std (RGB)
     

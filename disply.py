@@ -1,7 +1,7 @@
 from model import EventDetector
 import torch
 from torch.utils.data import DataLoader
-from dataloader_T import GolfDB_T, Normalize_T
+from displyDataloader import GolfDB_T, Normalize_T
 from torchvision import transforms
 from displyDataloader import GolfDB, ToTensor, Normalize
 import torch.nn.functional as F
@@ -14,17 +14,14 @@ def eval(model, split, seq_length, n_cpu, disp):
     # 非光流部分
     # dataset = GolfDB(data_file='/home/zqr/codes/GolfDB/data/videos_processed_160/datafile.txt',
     #                  vid_dir='/home/zqr/codes/GolfDB/data/videos_processed_160',
-    #                  seq_length=seq_length,
     #                  transform=None,
     #                  myMean=[0.485, 0.456, 0.406],
     #                  myStd=[0.229, 0.224, 0.225],
     #                  train=False)
 
     # 光流部分
-    dataset = GolfDB_T(data_file='data/train_split_{}.pkl'.format(split),
-                        vid_dir='/home/zqr/codes/data/opticalFlowRes_160',
-                        seq_length=seq_length,
-                        train=False)
+    dataset = GolfDB_T(data_file='/home/zqr/codes/data/data_info.txt',
+                        transform=None)
     data_loader = DataLoader(dataset,
                              batch_size=1,
                              shuffle=False,
@@ -76,7 +73,7 @@ if __name__ == '__main__':
                           bidirectional=True,
                           dropout=False)
     # save_dict = torch.load('models/swingnet_{}.pth.tar'.format(index))
-    save_dict = torch.load('swingnet_2200.pth.tar')
+    save_dict = torch.load('swingnet_1200.pth.tar')
     model.load_state_dict(save_dict['model_state_dict'])
     model.cuda()
     model.eval()

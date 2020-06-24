@@ -7,7 +7,7 @@ from torch.utils.data import DataLoader
 from torchvision import transforms
 import os
 from torch.utils.tensorboard import SummaryWriter
-from eval import eval
+from myeval import myeval
 
 
 if __name__ == '__main__':

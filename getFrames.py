@@ -1,20 +1,27 @@
 import os
 import cv2
+import sys
 if __name__=="__main__":
     # use to get frames
-    src_dir="/home/zqr/codes/GolfDB/data/videos_160"
-    top_dst_dir="/home/zqr/codes/data/Videos2Frames_160"
-    if not os.path.exists(top_dst_dir):
-            os.mkdir(top_dst_dir)
+    if len(sys.argv) != 3:
+        print("there is not enough param in getFrames")
+        sys.exit(1)
+    # videosFolder="/home/zqr/codes/GolfDB/data/videos_160"
+    # imagesFolder="/home/zqr/codes/data/Videos2Frames_160"
+    videosFolder = sys.argv[1]
+    imagesFolder = sys.argv[2]  
+    if not os.path.exists(imagesFolder):
+            os.mkdir(imagesFolder)
     index=0
-    fileNames = os.walk(src_dir)
+    for info in os.walk(videosFolder):
+        fileNames = info
     for filename in fileNames[2]:
         process_file_dir = filename.split(".")[0]
-        dst_dir=os.path.join(top_dst_dir,str(process_file_dir))
+        dst_dir=os.path.join(imagesFolder,str(process_file_dir))
         if not os.path.exists(dst_dir):
             os.mkdir(dst_dir)
         video = cv2.VideoCapture()
-        if not video.open(os.path.join(src_dir,filename)):
+        if not video.open(os.path.join(videosFolder,filename)):
             print("can not open the video")
             exit(1)
         pic_index = 0
