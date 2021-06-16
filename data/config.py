@@ -33,8 +33,10 @@ class Config:
     TEST_KEYPOINTS_PATH = "/home/zqr/data/test/test_keypoints"
     TEST_CLUB_KEYPOINTS_PATH = "/home/zqr/data/test/test_club_keypoints"  # 存放提取好的球杆关键点
     OPT_RESIZE_FLAG = True  # 是否resize光流图
-    TEST_RESULT_PATH = "/home/zqr/data/test/result"
+    TEST_RESULT_PATH = "/home/zqr/data/test/result" #存放最终的结果
     TEST_RESULT_TMP = "/home/zqr/data/test/score_result" #存放8帧和13帧关键帧检测结果
+    TEST_IMAGE_ONLY_KEYPOINTS = "/home/zqr/data/test/result_only_keypoints"
+    TEST_IMAGE_JUDGE = "/home/zqr/data/test/judge"
     TEST_MODEL_13 = "/home/zqr/data/models/optical/13/swingnet_9600.pth.tar"
     TEST_MODEL_8 = "/home/zqr/data/models/optical/8/swingnet_700.pth.tar"
     TEST_FLAG = True

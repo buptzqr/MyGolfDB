@@ -111,11 +111,11 @@ if __name__ == '__main__':
     
     
     # step7:在提取的关键帧图片上加关键点
+    # step8:动作评价
     runStatus = os.system('python3 visualize.py')
     if runStatus != 0:
-        print("13帧关键点错误")
+        print("关键点可视化&&评价失败")
         sys.exit(7)
-    print("13帧关键点完成")
-
-    # step8:动作评价
+    print("关键点可视化&&评价失败")
+    
 
