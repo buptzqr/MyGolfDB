@@ -15,7 +15,7 @@ if __name__ == '__main__':
             sequence_list.append(e.split('.')[0].split('_')[1])
 
         # 6（下杆手臂水平），9（击球），11（送杆杆身水平）这三帧准确率比较高，以delta为搜索范围进一步矫正这三帧
-        # 使用关键点信息来进行矫正
+        # 使用关键点信息来进行矫正(对关键点信息要求较高，目前关键点检测是不够准确的，建议不要轻易使用)
         DELTA = 4
         anchor_frame_num_list = [5,10]
         
@@ -95,7 +95,7 @@ if __name__ == '__main__':
                 if abs(club_slop -1) < abs(slop9-1):
                     slop9 = club_slop
                     frame_9th_idx = search_idx
-        
+        print("res dir {}".format(res_dir))
         print("5th index:{}".format(frame_5th_idx))
         print("6th index:{}".format(frame_6th_idx))
         print("7th index:{}".format(frame_7th_idx))

@@ -108,6 +108,11 @@ if __name__ == '__main__':
     print("merge完成")
     
     # step6:后处理功能
+    runStatus = os.system('python3 post_process.py')
+    if runStatus != 0:
+        print("后处理失败")
+        sys.exit(6)
+    print("后处理成功")
     
     
     # step7:在提取的关键帧图片上加关键点
@@ -116,6 +121,6 @@ if __name__ == '__main__':
     if runStatus != 0:
         print("关键点可视化&&评价失败")
         sys.exit(7)
-    print("关键点可视化&&评价失败")
+    print("关键点可视化&&评价成功")
     
 

@@ -94,9 +94,9 @@ def draw_angle(img,joints,angle_type):
         joints = np.array(joints).astype(np.int64)
         # 球杆和肩膀角度画法，就是多画一条水平线
         joints_hori = [joints[0,0]+100,joints[0,1]]
-        draw_line(img,joints[0],joints_hori,(0,0,0))
+        draw_line(img,joints[0],joints_hori,(255,0,255))
         joints_hori = [joints[0,0]-100,joints[0,1]]
-        draw_line(img,joints[0],joints_hori,(0,0,0))
+        draw_line(img,joints[0],joints_hori,(255,0,255))
         if angle_type == "shoulder":
             # 侧面肩膀的线太短了
             length = 100
@@ -338,8 +338,8 @@ if __name__ == '__main__':
             
             out_text = "left_elbow_angle:{}\nright_elbow_angle:{}\nshoulder_angle:{}\nclub_angle:{}\nclub_left_arm_angle:{}\nclub_right_arm_angle:{}\n".format(\
                 left_angle,right_angle,left_right_shoulder_angle,club_angle,left_club_arm_angle,right_club_arm_angle)
-            print(os.path.join(judge_dir, ori_img_name))
-            print(out_text)            
+            # print(os.path.join(judge_dir, ori_img_name))
+            # print(out_text)            
             draw_text_line(img, (5,5), out_text)
             cv2.imwrite(os.path.join(judge_dir, ori_img_name), img)
             json_map[img_name] = out_text
@@ -351,10 +351,17 @@ if __name__ == '__main__':
                 shoulder_angle_img_name = os.path.join(just_angle_dir,"shoulder.jpg")
                 shoulder_points = [[left_shoulder_x,left_shoulder_y],[right_shoulder_x,right_shoulder_y]]
                 shoulder_img = draw_angle(data_numpy,shoulder_points,"shoulder")
-                out_text = "andgle:{}".format(left_right_shoulder_angle)
+                out_text = "angle:{}".format(left_right_shoulder_angle)
                 draw_text_line(shoulder_img, (5,5), out_text)
                 cv2.imwrite(shoulder_angle_img_name, shoulder_img)
-                
+            else:
+                data_numpy = cv2.imread(os.path.join(
+                    cfg.TEST_RESULT_PATH, dir_name,ori_img_name), cv2.IMREAD_COLOR)
+                shoulder_angle_img_name = os.path.join(just_angle_dir,"shoulder.jpg")
+                out_text = "shoulder:err"
+                draw_text_line(shoulder_img, (5,5), out_text)
+                cv2.imwrite(shoulder_angle_img_name, data_numpy)
+                                
             # 球杆
             if club_angle !="err":
                 data_numpy = cv2.imread(os.path.join(
@@ -362,9 +369,16 @@ if __name__ == '__main__':
                 club_angle_img_name = os.path.join(just_angle_dir,"club.jpg")
                 club_points = [[club_tail_x,club_tail_y],[club_head_x,club_head_y]]
                 club_img = draw_angle(data_numpy,club_points,"club")
-                out_text = "andgle:{}".format(club_angle)
+                out_text = "angle:{}".format(club_angle)
                 draw_text_line(club_img, (5,5), out_text)
                 cv2.imwrite(club_angle_img_name, club_img)
+            else:
+                data_numpy = cv2.imread(os.path.join(
+                    cfg.TEST_RESULT_PATH, dir_name,ori_img_name), cv2.IMREAD_COLOR)
+                club_angle_img_name = os.path.join(just_angle_dir,"club.jpg")
+                out_text = "club:err"
+                draw_text_line(data_numpy, (5,5), out_text)
+                cv2.imwrite(club_angle_img_name, data_numpy)
             # 后肘
             if left_angle !="err":
                 data_numpy = cv2.imread(os.path.join(
@@ -372,18 +386,34 @@ if __name__ == '__main__':
                 left_angle_img_name = os.path.join(just_angle_dir,"left_elbow.jpg")
                 left_elbow_points = [[left_shoulder_x,left_shoulder_y],[left_elbow_x,left_elbow_y],[left_wrist_x,left_wrist_y]]
                 left_elbow_img = draw_angle(data_numpy,left_elbow_points,"elbow")
-                out_text = "andgle:{}".format(left_angle)
+                out_text = "angle:{}".format(left_angle)
                 draw_text_line(left_elbow_img, (5,5), out_text)
                 cv2.imwrite(left_angle_img_name, left_elbow_img)
+            else:
+                data_numpy = cv2.imread(os.path.join(
+                    cfg.TEST_RESULT_PATH, dir_name,ori_img_name), cv2.IMREAD_COLOR)
+                left_angle_img_name = os.path.join(just_angle_dir,"left_elbow.jpg")
+                out_text = "left_elbow:err"
+                draw_text_line(data_numpy, (5,5), out_text)
+                cv2.imwrite(left_angle_img_name, data_numpy)
+            
             if right_angle !="err":
                 data_numpy = cv2.imread(os.path.join(
                     cfg.TEST_RESULT_PATH, dir_name,ori_img_name), cv2.IMREAD_COLOR)
                 right_angle_img_name = os.path.join(just_angle_dir,"right_elbow.jpg")
                 right_elbow_points = [[right_shoulder_x,right_shoulder_y],[right_elbow_x,right_elbow_y],[right_wrist_x,right_wrist_y]]
                 right_elbow_img = draw_angle(data_numpy,right_elbow_points,"elbow")
-                out_text = "andgle:{}".format(right_angle)
+                out_text = "angle:{}".format(right_angle)
                 draw_text_line(right_elbow_img, (5,5), out_text)
                 cv2.imwrite(right_angle_img_name, right_elbow_img)
+            else:
+                data_numpy = cv2.imread(os.path.join(
+                    cfg.TEST_RESULT_PATH, dir_name,ori_img_name), cv2.IMREAD_COLOR)
+                right_angle_img_name = os.path.join(just_angle_dir,"right_elbow.jpg")
+                out_text = "right_elbow:err"
+                draw_text_line(data_numpy, (5,5), out_text)
+                cv2.imwrite(right_angle_img_name, data_numpy)
+                
             # 球杆和手臂
             if left_club_arm_angle !="err":
                 data_numpy = cv2.imread(os.path.join(
@@ -391,20 +421,33 @@ if __name__ == '__main__':
                 left_club_arm_img_name = os.path.join(just_angle_dir,"left_club_arm.jpg")
                 left_club_arm_points = [[left_elbow_x,left_elbow_y],[left_wrist_x,left_wrist_y],[club_tail_x,club_tail_y],[club_head_x,club_head_y]]
                 left_club_arm_img = draw_angle(data_numpy,left_club_arm_points,"club_elbow")
-                out_text = "andgle:{}".format(left_club_arm_angle)
+                out_text = "angle:{}".format(left_club_arm_angle)
                 draw_text_line(left_club_arm_img, (5,5), out_text)
                 cv2.imwrite(left_club_arm_img_name, left_club_arm_img)
+            else:
+                data_numpy = cv2.imread(os.path.join(
+                    cfg.TEST_RESULT_PATH, dir_name,ori_img_name), cv2.IMREAD_COLOR)
+                left_club_arm_img_name = os.path.join(just_angle_dir,"left_club_arm.jpg")
+                out_text = "left_club_arm:err"
+                draw_text_line(data_numpy, (5,5), out_text)
+                cv2.imwrite(left_club_arm_img_name, data_numpy)
+                
             if right_club_arm_angle !="err":
                 data_numpy = cv2.imread(os.path.join(
                     cfg.TEST_RESULT_PATH, dir_name,ori_img_name), cv2.IMREAD_COLOR)
                 right_club_arm_img_name = os.path.join(just_angle_dir,"right_club_arm.jpg")
                 right_club_arm_points = [[right_elbow_x,right_elbow_y],[right_wrist_x,right_wrist_y],[club_tail_x,club_tail_y],[club_head_x,club_head_y]]
                 right_club_arm_img = draw_angle(data_numpy,right_club_arm_points,"club_elbow")
-                out_text = "andgle:{}".format(right_club_arm_angle)
+                out_text = "angle:{}".format(right_club_arm_angle)
                 draw_text_line(right_club_arm_img, (5,5), out_text)
                 cv2.imwrite(right_club_arm_img_name, right_club_arm_img)
-                
-
+            else:
+                data_numpy = cv2.imread(os.path.join(
+                    cfg.TEST_RESULT_PATH, dir_name,ori_img_name), cv2.IMREAD_COLOR)
+                right_club_arm_img_name = os.path.join(just_angle_dir,"right_club_arm.jpg")
+                out_text = "right_club_arm:err"
+                draw_text_line(data_numpy, (5,5), out_text)
+                cv2.imwrite(right_club_arm_img_name, data_numpy)
                 
     with open(json_file_path,'w') as f:
         json.dump(json_map,f) 
